@@ -746,7 +746,7 @@ public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>,
 	protected class reverseIterator implements Iterator<E> {
 		protected ListIterator<E> it = listIterator(size());
 
-		@Override
+		@Override 
 		public boolean hasNext() {
 			return it.hasPrevious();
 		}
