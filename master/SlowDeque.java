@@ -8,7 +8,6 @@
  * Creates a Vector Deque using composition
  * Nested class DescendingIterator Creates a <code> Iterator </code> that returns the elements in reverse sequential order. 
  * The elements will be returned in order from last (tail) to first (head).
-
  */
 package edu.sdsu.cs.datastructures;
 
@@ -19,15 +18,18 @@ import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
 /**
- * SlowDeque class Creates a Deque that uses a Vector 
- * @param <E> the type of Object that is going to be added to the Deque
+ * SlowDeque class Creates a Deque that uses a Vector
+ * 
+ * @param <E>
+ *            the type of elements held in this <code> Deque </code>
+ * 
  */
 public class SlowDeque<E> implements Deque<E> {
 	protected Vector<E> deque;
 
 	/**
-	 * Constructs an empty Deque so that its internal data array has size 10
-	 * and its standard capacity increment is zero.
+	 * Constructs an empty Deque so that its internal data array has size 10 and
+	 * its standard capacity increment is zero.
 	 */
 	public SlowDeque() {
 		deque = new Vector<E>();
@@ -38,20 +40,18 @@ public class SlowDeque<E> implements Deque<E> {
 	 * in the order they are returned by the collection's iterator.
 	 * 
 	 * @param c
-	 *            the collection whose elements are to be placed into this
-	 *            Deque
+	 *            the collection whose elements are to be placed into this Deque
 	 * @throws NullPointerException
 	 *             - if the specified collection is null
 	 */
-	public SlowDeque(Collection <? extends E> c){
+	public SlowDeque(Collection<? extends E> c) {
 		this();
-		if(c.equals(null)){
+		if (c.equals(null)) {
 			throw new NullPointerException("the Specified collection is empty");
 		}
 		addAll(c);
 	}
 
-	
 	@Override
 	public boolean addAll(Collection<? extends E> c) {
 		return deque.addAll(c);
@@ -116,7 +116,7 @@ public class SlowDeque<E> implements Deque<E> {
 
 	@Override
 	public Iterator<E> descendingIterator() {
-		return (new DescendingIterator());
+		return (new reverseIterator());
 
 	}
 
@@ -245,7 +245,7 @@ public class SlowDeque<E> implements Deque<E> {
 	@Override
 	public boolean removeLastOccurrence(Object o) {
 		int index = deque.lastIndexOf(o);
-		if(index != -1 ){
+		if (index != -1) {
 			deque.remove(index);
 			return true;
 		}
@@ -261,9 +261,9 @@ public class SlowDeque<E> implements Deque<E> {
 	 * Creates an <code> Iterator </code> the iterates in reverse order
 	 *
 	 */
-	protected class DescendingIterator implements Iterator<E> {
+	protected class reverseIterator implements Iterator<E> {
 		protected ListIterator<E> it = deque.listIterator(size());
-		
+
 		@Override
 		public boolean hasNext() {
 			return it.hasPrevious();
@@ -273,16 +273,14 @@ public class SlowDeque<E> implements Deque<E> {
 		public E next() {
 			return it.previous();
 		}
-		
+
 		@Override
 		public void remove() {
-			it.remove();
-
+			throw new UnsupportedOperationException("the remove operation is not supported by this iterator");
 		}
 
-		
-
 	}
+
 	/**
 	 * throws a noSuchElementException if the <code> Deque </code> is empty
 	 */
