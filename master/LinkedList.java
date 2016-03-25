@@ -16,7 +16,6 @@ package edu.sdsu.cs.datastructures;
 
 import java.util.AbstractSequentialList;
 import java.util.Collection;
-import java.util.ConcurrentModificationException;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
@@ -28,14 +27,13 @@ import java.util.NoSuchElementException;
  * list Iterator
  * 
  * @param <E>
- *            the Object type that will be added to the <code> Deque </code>.
+ *            the type of elements held in this <code> Deque </code>
  */
 
 public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>, Deque<E> {
 
 	protected int elementCount;
 	protected Node<E> head, tail;
-	protected ListIterator<E> it;
 
 	/**
 	 * Constructs an empty LinkedList.
@@ -44,12 +42,11 @@ public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>,
 		this.head = null;
 		this.tail = null;
 		this.elementCount = 0;
-		it = null;
 	}
 
 	/**
-	 * Constructs a LinkedList containing the elements of the specified collection,
-	 * in the order they are returned by the collection's iterator.
+	 * Constructs a LinkedList containing the elements of the specified
+	 * collection, in the order they are returned by the collection's iterator.
 	 * 
 	 * @param c
 	 *            the collection whose elements are to be placed into this
@@ -409,7 +406,7 @@ public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>,
 	 */
 	@Override
 	public Iterator<E> descendingIterator() {
-		return (new DescendingIterator());
+		return (new reverseIterator());
 	}
 
 	/**
@@ -434,6 +431,28 @@ public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>,
 			this.next = null;
 			this.prev = null;
 		}
+		/**
+		 * 
+		 * @param data
+		 *            the object to be stored in the node.
+		 */
+
+		/**
+		 * Creates a Node with next set <code> next </code> and prev set
+		 * <code> prev </code> field set to <code> data </code>
+		 * 
+		 * @param data
+		 *            the object to be stored in the node.
+		 * @param next
+		 *            the next <code> Node </code>
+		 * @param prev
+		 *            the prev <code> Node </code>
+		 */
+		public Node(T data, Node<T> next, Node<T> prev) {
+			this.data = data;
+			this.next = next;
+			this.prev = prev;
+		}
 
 	}
 
@@ -444,10 +463,9 @@ public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>,
 	protected class ItrHelper implements ListIterator<E> {
 		protected Node<E> cursor;
 		protected int cursorIndex;
-		protected long expectedModCount;
 		protected boolean shouldRemove;
 		protected Node<E> lastReturned;
-		private boolean nextCalled;
+		protected boolean nextCalled;
 
 		/**
 		 * Creates a <code> ListIterator </code> that starts from the head of
@@ -456,7 +474,6 @@ public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>,
 		public ItrHelper() {
 			this.cursor = head;
 			this.cursorIndex = 0;
-			this.expectedModCount = modCount;
 			this.shouldRemove = false;
 			lastReturned = null;
 
@@ -472,20 +489,9 @@ public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>,
 		 */
 		public ItrHelper(int index) {
 			this.checkBounds(index);
-			if (index == size())
-				cursor = tail;
-			this.cursor = head;
-			int count = 0;
-			while (cursor != null) {
-				if (count == index) {
-					break;
-				}
-				cursor = cursor.next;
-				count++;
-			}
+			cursor = (index == size()) ? null : node(index);
 			cursorIndex = index;
 			this.shouldRemove = false;
-			this.expectedModCount = modCount;
 			this.lastReturned = null;
 
 		}
@@ -500,7 +506,6 @@ public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>,
 		 */
 		@Override
 		public boolean hasNext() {
-			this.checkConcurrentMod();
 			return (cursorIndex != size());
 		}
 
@@ -517,13 +522,12 @@ public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>,
 			if (!hasNext()) {
 				throw new NoSuchElementException("There are no more elements to iterate through");
 			}
-			E tmp = cursor.data;
 			this.lastReturned = cursor;
 			cursor = cursor.next;
 			shouldRemove = true;
 			cursorIndex++;
 			nextCalled = true;
-			return tmp;
+			return lastReturned.data;
 
 		}
 
@@ -537,7 +541,6 @@ public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>,
 		 */
 		@Override
 		public boolean hasPrevious() {
-			this.checkConcurrentMod();
 			return (cursorIndex != 0);
 		}
 
@@ -553,21 +556,18 @@ public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>,
 			if (!hasPrevious()) {
 				throw new NoSuchElementException("There are no more elements to iterate through");
 			}
-			if (cursorIndex <= size()) {
-				E tmp = cursor.data;
-				this.lastReturned = cursor;
+			if (cursor == null) {
+				lastReturned = tail;
+				cursor = tail;
+			} else {
 				cursor = cursor.prev;
-				shouldRemove = true;
-				cursorIndex--;
-				return tmp;
+				this.lastReturned = cursor;
 			}
-			E tmp = cursor.prev.data;
-			cursor = cursor.prev;
-			this.lastReturned = cursor;
+			nextCalled = false;
 			shouldRemove = true;
 			cursorIndex--;
-			return tmp;
 
+			return lastReturned.data;
 		}
 
 		/**
@@ -612,7 +612,7 @@ public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>,
 		 */
 		@Override
 		public void remove() {
-			if (shouldRemove == false)
+			if (!shouldRemove)
 				throw new IllegalStateException("Cannot remove from List");
 			if (size() == 1) {
 				head = tail = null;
@@ -620,7 +620,6 @@ public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>,
 				head = lastReturned.next;
 			} else if (lastReturned == tail) {
 				tail = lastReturned.prev;
-				tail.next = null;
 
 			} else {
 				lastReturned.prev.next = lastReturned.next;
@@ -650,7 +649,7 @@ public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>,
 		 */
 		@Override
 		public void set(E e) {
-			if (shouldRemove == false) {
+			if (!shouldRemove) {
 				throw new IllegalStateException("Cannot set the element in the list to specified element");
 			}
 			this.lastReturned.data = e;
@@ -667,17 +666,10 @@ public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>,
 		 */
 		@Override
 		public void add(E element) {
-			addBefore(cursorIndex, element);
-		}
-
-		/**
-		 * Checks if anything modified the data structure while iterating
-		 */
-		private void checkConcurrentMod() {
-			if (modCount != this.expectedModCount) {
-				throw new ConcurrentModificationException(
-						"something unexpectedly modified the underlying structure during iteration");
-			}
+			cursor = addBeforeNode(element, cursor);
+			cursorIndex++;
+			elementCount++;
+			lastReturned = null;
 		}
 
 		/**
@@ -695,42 +687,54 @@ public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>,
 			}
 
 		}
-
 		/**
-		 * adds the element before the given index
+		 * returns the <code> Node </code> at the specified index
 		 * 
 		 * @param index
-		 *            the position of the list to add an element before
+		 *            the specified position to return the <code> node </code>
+		 *            from
+		 */
+		private Node<E> node(int index) {
+			if (index < (size() >> 1)) {
+				Node<E> temp = head;
+				for (int i = 0; i < index; i++)
+					temp = temp.next;
+				return temp;
+			} else {
+				Node<E> temp = tail;
+				for (int i = size() - 1; i > index; i--)
+					temp = temp.prev;
+				return temp;
+			}
+		}
+
+		/**
+		 * adds the element before the given <code> Node </code>.
+		 * 
+		 * @param node
+		 *            the <code> Node </code> to add before.
 		 * @param element
 		 *            the element to be added
 		 */
-		private void addBefore(int index, E element) {
-			Node<E> newNode = new Node<E>(element);
-			if (cursorIndex == 0) {
+		private Node<E> addBeforeNode(E element, Node<E> node) {
+			if (size() == 0) {
+				Node<E> newNode = new Node<E>(element);
 				head = tail = newNode;
-			}
-			if (cursorIndex == size()) {
-				tail.next = newNode;
-				newNode.prev = tail;
-				tail = newNode;
-			} else if (cursorIndex == 0) {
-				newNode.next = cursor;
-				cursor.prev = newNode;
-				head = newNode;
-			} else if (cursorIndex == size()) {
-				newNode.prev = cursor;
+			} else if (node == null) {
+				Node<E> newNode = new Node<E>(element, node, tail);
 				tail.next = newNode;
 				tail = newNode;
-				cursor = newNode;
 			} else {
-				newNode.next = cursor;
-				newNode.prev = cursor.prev;
-				cursor.prev.next = newNode;
-				cursor.prev = newNode;
+				Node<E> newNode = new Node<E>(element, node, node.prev);
+				if (node == head) {
+					node.prev = newNode;
+					head = newNode;
+					return node;
+				}
+				node.prev.next = newNode;
+				node.prev = newNode;
 			}
-			cursorIndex++;
-			elementCount++;
-			lastReturned = null;
+			return node;
 		}
 
 	}
@@ -739,7 +743,7 @@ public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>,
 	 * Creates an <code> Iterator </code> the iterates in reverse order
 	 *
 	 */
-	private class DescendingIterator implements Iterator<E> {
+	protected class reverseIterator implements Iterator<E> {
 		protected ListIterator<E> it = listIterator(size());
 
 		@Override
@@ -754,8 +758,7 @@ public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>,
 
 		@Override
 		public void remove() {
-			it.remove();
-
+			throw new UnsupportedOperationException("the remove operation is not supported by this iterator");
 		}
 
 	}
