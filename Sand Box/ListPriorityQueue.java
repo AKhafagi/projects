@@ -39,8 +39,8 @@ public class ListPriorityQueue<E> implements Queue<E> {
 	 */
 	@SuppressWarnings("unchecked")
 	public ListPriorityQueue() {
-		//baseQueue = new ArrayList<E>();
-		 baseQueue = new LinkedList<E>();
+		baseQueue = new ArrayList<E>();
+		//baseQueue = new LinkedList<E>();
 		curComp = (Comparator<? super E>) (Comparator.naturalOrder());
 	}
 
@@ -72,11 +72,7 @@ public class ListPriorityQueue<E> implements Queue<E> {
 	 *            the collection.
 	 */
 	public ListPriorityQueue(Collection<? extends E> col, Comparator<? super E> comp) {
-		this();
-		if (col.equals(null)) {
-			throw new NullPointerException("The Specified Collection is null");
-		}
-		addAll(col);
+		this(col);
 		curComp = comp;
 	}
 
@@ -96,17 +92,16 @@ public class ListPriorityQueue<E> implements Queue<E> {
 	@Override
 	public boolean add(E arg0) {
 		if (baseQueue instanceof RandomAccess) {
-			if (size() == 0) {
+			if (isEmpty()) {
 				baseQueue.add(arg0);
 				return true;
 			} else {
-				int index = iterativeBinarySearch(baseQueue,arg0,0,size()-1,(Comparator<E>) curComp);
-				baseQueue.add(index,arg0);
-			return true;
+				int index = iterativeBinaryInsertion(baseQueue, arg0, 0, size() - 1, (Comparator<E>) curComp);
+				baseQueue.add(index, arg0);
+				return true;
 			}
-		}
-			else {
-			if (size() == 0) {
+		} else {
+			if (isEmpty()) {
 				baseQueue.add(arg0);
 				return true;
 			} else {
@@ -119,13 +114,10 @@ public class ListPriorityQueue<E> implements Queue<E> {
 						return true;
 					}
 				}
-				baseQueue.add(arg0);
-				return true;
+				return baseQueue.add(arg0);
 
 			}
-
 		}
-			
 	}
 
 	/**
@@ -149,10 +141,8 @@ public class ListPriorityQueue<E> implements Queue<E> {
 
 	@Override
 	public boolean contains(Object arg0) {
-		if (baseQueue instanceof RandomAccess) {
-			int index = this.recursiveBinarySearch(baseQueue, (E) arg0, 0, size(), (Comparator<E>) curComp);
-			return (index != -1);
-		}
+		if (baseQueue instanceof RandomAccess) 
+			return (this.iterativeBinarySearch(baseQueue, (E) arg0, 0, size() - 1, (Comparator<E>) curComp) != -1);
 		return baseQueue.contains(arg0);
 
 	}
@@ -192,10 +182,8 @@ public class ListPriorityQueue<E> implements Queue<E> {
 
 	@Override
 	public E poll() {
-		if (isEmpty()) {
-			return null;
-		}
-		return baseQueue.remove(0);
+		return baseQueue.isEmpty() ? null : baseQueue.remove(0);
+
 
 	}
 
@@ -210,7 +198,7 @@ public class ListPriorityQueue<E> implements Queue<E> {
 	@Override
 	public boolean remove(Object arg0) {
 		if (baseQueue instanceof RandomAccess) {
-			int index = this.recursiveBinarySearch(baseQueue, (E) arg0, 0, size(), (Comparator<E>) curComp);
+			int index = this.iterativeBinarySearch(baseQueue, (E) arg0, 0, size() - 1, (Comparator<E>) curComp);
 			if (index != -1) {
 				baseQueue.remove(index);
 				return true;
@@ -248,23 +236,23 @@ public class ListPriorityQueue<E> implements Queue<E> {
 		return baseQueue.toArray(arg0);
 	}
 
-	private int recursiveBinarySearch(final List<E> list, final E value, final int low, final int high,
-			final Comparator<E> order) {
-		if (low > high) {
-			return -1;
+	private int iterativeBinarySearch(List<E> items, final E value, int low, int high, final Comparator<E> order) {
+		while (low <= high) {
+			int mid = (low + high) >> 1;
+			int result = order.compare(value, items.get(mid));
+			if (result > 0) {
+				// value - array > 0: array value smaller, so in right half
+				low = mid + 1;
+			} else if (result < 0) {
+				high = mid - 1;
+			} else {
+				return mid;
+			}
 		}
-		final int mid = (low + high) >> 1;
-		final int result = order.compare(value, list.get(mid));
-		if (result > 0) {
-			return recursiveBinarySearch(list, value, mid + 1, high, order);
-		} else if (result < 0) {
-			return recursiveBinarySearch(list, value, low, mid - 1, order);
-		}
-		return mid;
+		return -1;
 	}
 
-	private int iterativeBinarySearch(List<E> items, final E value, int low, int high,
-			final Comparator<E> order) {
+	private int iterativeBinaryInsertion(List<E> items, final E value, int low, int high, final Comparator<E> order) {
 		while (low <= high) {
 			int mid = (low + high) >> 1;
 			int result = order.compare(value, items.get(mid));
