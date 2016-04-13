@@ -113,6 +113,7 @@ public class MazeBuilder {
 	 */
 	private void generate(MazeRoom start) {
 		int random;
+		Random rand = new Random();
 		MazeRoom temp;
 		int y = start.getRow();
 		int x = start.getCol();

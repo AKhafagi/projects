@@ -25,11 +25,20 @@ public class MazeSolver {
 
 	final Maze myMaze;
 
-	boolean[][] visited;
+	int[][] visited;
 
 	public MazeSolver(Maze toSolve) {
 		myMaze = toSolve;
-		visited = new boolean[toSolve.size()][toSolve.size()];
+		visited = new int[toSolve.size()][toSolve.size()];
+		visited = intializeArray(visited);
+	}
+	private int[][] intializeArray(int[][] array){
+		for(int i =0; i <array.length;i++){
+			for(int j =0; j< array.length;j++){
+				array[i][j] =-1;
+			}
+		}
+		return array;
 	}
 
 	/**
@@ -64,87 +73,67 @@ public class MazeSolver {
 	 */
 	public Deque<MazeRoom> solve(Point start, Point end) {
 		Deque<MazeRoom> path = new LinkedList<MazeRoom>();
-		Deque<MazeRoom> solution = new LinkedList<MazeRoom>();
-		int distance = 0;
 		MazeRoom current = myMaze.getRoom(start.y, start.x);
-		MazeRoom next;
+		int curRow;
+		int curCol;
 		path.add(current);
+		int distance = 0;
+		visited[start.y][start.x] = 0;
 		while(!path.isEmpty()){
 			current = path.remove();
-			visited[current.getRow()][current.getCol()] = true;
-			if(current.posInMaze.equals(end)){
-				break;
+			curRow = current.getRow();
+			curCol = current.getCol();
+			distance = visited[curRow][curCol];
+			if (curCol>0 && (visited[curRow][curCol-1] == -1 && current.canMoveWest()) ) {
+				visited[curRow][curCol-1] = distance+1;
+				path.add(myMaze.getRoom(curRow,curCol - 1));
 			}
-			if (current.canMoveNorth() && current.getRow()+1 >myMaze.size()  ) {
-				next = myMaze.getRoom(start.y+1, start.x);
-				next.setDistanceToStart(distance+1);
-				path.add(next);
+			 if(curRow > 0 && visited[curRow-1][curCol] == -1 && current.canMoveSouth()){
+				 visited[curRow-1][curCol] = distance+1;
+					path.add(myMaze.getRoom(curRow-1,curCol));
 			}
-			 if (current.canMoveSouth() && current.getCol()>0) {
-				next = myMaze.getRoom(start.y-1, start.x);
-				next.setDistanceToStart(distance+1);
-				path.add(next);
-				
+			if (curCol+1 <myMaze.size() && (visited[curRow][curCol+1] == -1) && current.canMoveEast() ) {
+				visited[curRow][curCol+1] = distance+1;
+				path.add(myMaze.getRoom(curRow,curCol + 1));
 			}
-			 if (current.canMoveEast()&& current.getCol()+1< myMaze.size()) {
-				next = myMaze.getRoom(start.y, start.x+1 );
-				next.setDistanceToStart(distance+1);
-				path.add(next);
-				
-			}
-			 if (current.canMoveWest()&& current.getRow()> 0) {
-				next = myMaze.getRoom(start.y, start.x-1);
-				next.setDistanceToStart(distance+1);
-				path.add(next);
-				
-			}
+			if (curRow+1 <myMaze.size() && visited[curRow+1][curCol] == -1 && current.canMoveNorth()) {
+				visited[curRow+1][curCol] = distance+1;
+				path.add(myMaze.getRoom(curRow+1,curCol));
+				}
+			 
 		}
-		solution.push(myMaze.getRoom(end.y, end.x));
-		while(!solution.isEmpty()){
-			current = solution.peekFirst();
-			if(current.posInMaze.equals(start)){
-				return solution;
-			}
-			
-			next=getShortestDistance(current);
-			solution.push(next);
-					
+		MazeRoom destination = myMaze.getRoom(end.y, end.x);
+		MazeRoom origin = myMaze.getRoom(start.y, start.x);
+		path.push(destination);
+		while(!path.peek().equals(origin)){
+			current = path.peekFirst();
+			destination=getShortestDistance(current);
+			path.push(destination);
 		}
-		return solution;
-		
+		return path;
 	}
 	private MazeRoom getShortestDistance(MazeRoom start){
-		Deque<MazeRoom> path = getNeighbors(start);
-		int distance = start.getDistanceToStart();
-		MazeRoom child;
-		MazeRoom min = start;
-		while(!path.isEmpty()){
-			child = path.remove();
-			if(child.getDistanceToStart() < distance){
-				min = child;	
-			}
-		}
-		return min;
-	}
-	private Deque<MazeRoom> getNeighbors(MazeRoom end){
-		Deque<MazeRoom> path = new LinkedList<MazeRoom>();
+		int row = start.getRow();
+		int col = start.getCol();
+		int distance = visited[row][col];
 		MazeRoom next;
-		if (end.canMoveNorth() && end.getCol() > 0 ) {
-			next = myMaze.getRoom(end.getRow(), end.getCol()-1);
-			path.add(next);
+		if (row+1 < myMaze.size() && visited[row+1][col] == distance-1 ) {
+			next = myMaze.getRoom(row+1,col);
+			return next;
 		}
-		 if (end.canMoveSouth() && end.getCol()+1< myMaze.size()) {
-			next = myMaze.getRoom(end.getRow(), end.getCol()+1);
-			path.add(next);
+		if (row > 0 && visited[row-1][col] == distance-1 ) {
+			next = myMaze.getRoom(row-1,col);
+			return next;
 		}
-		 if (end.canMoveEast()&& end.getRow()+1< myMaze.size()) {
-			next = myMaze.getRoom(end.getRow()+1, end.getCol() );
-			path.add(next);
+		if (col+1 < myMaze.size() && visited[row][col+1] == distance-1 ) {
+			next = myMaze.getRoom(row,col+1);
+			return next;
 		}
-		 if (end.canMoveWest()&& end.getRow()> 0) {
-			next = myMaze.getRoom(end.getRow()-1, end.getCol());
-			path.add(next);
+		if (col > 0  && visited[row][col-1] == distance-1 ) {
+			next = myMaze.getRoom(row,col-1);
+			return next;
 		}
-		 return path;
+		return start;
 	}
+	
 }
