@@ -62,6 +62,7 @@ public class MazeBuilder {
 	 *            kind of configuration object holding all these data.
 	 */
 	private Deque<MazeRoom> visitedRooms;
+
 	public MazeBuilder(int edgeLength, int borderWidth) {
 		visited = new boolean[edgeLength][edgeLength];
 		theGrid = initializeRooms(edgeLength, borderWidth);
@@ -112,36 +113,24 @@ public class MazeBuilder {
 	 *            unvisited neighbors.
 	 */
 	private void generate(MazeRoom start) {
-		int random;
-		Random rand = new Random();
-		MazeRoom temp;
-		int y = start.getRow();
-		int x = start.getCol();
-		this.visited[y][x] = true;
+		MazeRoom currentRoom;
+		int row = start.getRow();
+		int col = start.getCol();
+		this.visited[row][col] = true;
 		Deque<MazeRoom> unvisitedRooms = getUnvisitedNeighbors(start);
-		while (!unvisitedRooms.isEmpty()) {
-			 random = dice.nextInt(2);
-			 if(random ==1){
-				 temp = unvisitedRooms.getFirst();
-				 visitedRooms.push(temp);
-				 connectNeighbors(start, temp);
-				 generate(temp);
-				 break;
-			 }
-			else{
-				 temp = unvisitedRooms.getLast();
-				 visitedRooms.push(temp);
-				 connectNeighbors(start, temp);
-				 generate(temp);
-				 break;
-			}
-			
-			}
-			 if(!visitedRooms.isEmpty()){
-				 temp = visitedRooms.pop();
-				 generate(temp);
-			}
-			
+		if (!unvisitedRooms.isEmpty()) {
+			currentRoom = randomNeighbor(unvisitedRooms);
+			connectNeighbors(start, currentRoom);
+			visitedRooms.push(currentRoom);
+			generate(currentRoom);
+
+		}
+
+		if (!visitedRooms.isEmpty()) {
+			currentRoom = visitedRooms.pop();
+			generate(currentRoom);
+		}
+
 	}
 
 	private static MazeRoom[][] initializeRooms(int size, int borderWidth) {
@@ -168,19 +157,19 @@ public class MazeBuilder {
 		Deque<MazeRoom> unvisitedRooms = new LinkedList<MazeRoom>();
 		int x = target.getCol();
 		int y = target.getRow();
-			
-		if (x>0 && !visited[y][x - 1] ) {
+
+		if (x > 0 && !visited[y][x - 1]) {
 			unvisitedRooms.add(theGrid[y][x - 1]);
 		}
-		
-		 if(x+1 < theGrid.length && !visited[y][x+1]){
-			unvisitedRooms.add(theGrid[y][x+1]);
+
+		if (x + 1 < theGrid.length && !visited[y][x + 1]) {
+			unvisitedRooms.add(theGrid[y][x + 1]);
 		}
-		if (y>0 && !visited[y - 1][x]) {
+		if (y > 0 && !visited[y - 1][x]) {
 			unvisitedRooms.add(theGrid[y - 1][x]);
 		}
-		 if (y+1 < theGrid.length && !visited[y+1][x]) {
-			unvisitedRooms.add(theGrid[y+1][x]);
+		if (y + 1 < theGrid.length && !visited[y + 1][x]) {
+			unvisitedRooms.add(theGrid[y + 1][x]);
 		}
 		return unvisitedRooms;
 	}
@@ -195,28 +184,44 @@ public class MazeBuilder {
 	 *            target with which to connect
 	 */
 	private void connectNeighbors(MazeRoom source, MazeRoom neighbor) {
-		int sourceX=source.getCol();
-		int sourceY=source.getRow();
-		int neighborX= neighbor.getCol();
+		int sourceX = source.getCol();
+		int sourceY = source.getRow();
+		int neighborX = neighbor.getCol();
 		int neighborY = neighbor.getRow();
-		if(sourceX == neighborX && sourceY+1 == neighborY){
+		if (sourceX == neighborX && sourceY + 1 == neighborY) {
 			source.removeWallNorth();
 			neighbor.removeWallSouth();
 		}
-		if(sourceX == neighborX && sourceY-1 == neighborY){
+		if (sourceX == neighborX && sourceY - 1 == neighborY) {
 			source.removeWallSouth();
 			neighbor.removeWallNorth();
-			
-			
+
 		}
-		if(sourceY == neighborY && sourceX+1 == neighborX){
-		source.removeWallEast();
-		neighbor.removeWallWest();
+		if (sourceY == neighborY && sourceX + 1 == neighborX) {
+			source.removeWallEast();
+			neighbor.removeWallWest();
 		}
-		 if(sourceY == neighborY && sourceX-1 == neighborX) {
-			 source.removeWallWest();
-				neighbor.removeWallEast();
-			}
+		if (sourceY == neighborY && sourceX - 1 == neighborX) {
+			source.removeWallWest();
+			neighbor.removeWallEast();
+		}
+	}
+
+	private MazeRoom randomNeighbor(Deque<MazeRoom> unvisitedRooms) {
+		LinkedList<MazeRoom> mazeRooms = (LinkedList<MazeRoom>) unvisitedRooms;
+		MazeRoom randomRoom;
+		Random rand = new Random();
+		int random = rand.nextInt(unvisitedRooms.size());
+		if (random == 0) {
+			randomRoom = mazeRooms.remove(random);
+		} else if (random == 1) {
+			randomRoom = mazeRooms.remove(random);
+		} else if (random == 2) {
+			randomRoom = mazeRooms.remove(random);
+		} else {
+			randomRoom = mazeRooms.remove(random);
+		}
+		return randomRoom;
 	}
 
 }
