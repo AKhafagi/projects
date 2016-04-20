@@ -122,19 +122,19 @@ public class MazeSolver {
 		int col = start.getCol();
 		int distance = visited[row][col];
 		MazeRoom next;
-		if (row+1 < myMaze.size() && visited[row+1][col] == distance-1 ) {
+		if (row+1 < myMaze.size() && visited[row+1][col] == distance-1 && start.canMoveNorth() ) {
 			next = myMaze.getRoom(row+1,col);
 			return next;
 		}
-		if (row > 0 && visited[row-1][col] == distance-1 ) {
+		if (row > 0 && visited[row-1][col] == distance-1 && start.canMoveSouth() ) {
 			next = myMaze.getRoom(row-1,col);
 			return next;
 		}
-		if (col+1 < myMaze.size() && visited[row][col+1] == distance-1 ) {
+		if (col+1 < myMaze.size() && visited[row][col+1] == distance-1 && start.canMoveEast() ) {
 			next = myMaze.getRoom(row,col+1);
 			return next;
 		}
-		if (col > 0  && visited[row][col-1] == distance-1 ) {
+		if (col > 0  && visited[row][col-1] == distance-1&& start.canMoveWest() ) {
 			next = myMaze.getRoom(row,col-1);
 			return next;
 		}

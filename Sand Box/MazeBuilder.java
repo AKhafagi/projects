@@ -15,7 +15,6 @@ import java.util.Deque;
  */
 
 import java.util.Random;
-import java.util.Stack;
 
 import edu.sdsu.cs.datastructures.LinkedList;
 
