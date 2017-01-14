@@ -18,14 +18,14 @@ public class Prog2_a {
 		final int NUM_ELEMENTS = scan.nextInt(); // Number of Elements in Array.
 		int [] numbers = new int [NUM_ELEMENTS]; // length of the array is the user entered number.
 		//ArrayList<ComputerPart> comp = new ArrayList<>();
-		util.randomInt(numbers,NUM_ELEMENTS);  // envoke method to fill array elements with random numbers
-		util.printIArr (numbers, NUM_ELEMENTS); // envoke method to print array elements
+		util.randomArray(numbers);  // envoke method to fill array elements with random numbers
+		util.printArray(numbers); // envoke method to print array elements
 		
 		System.out.println(); //  print line after array elements 
 			
-		util.reverseArray (numbers, NUM_ELEMENTS); // envoke method to reverse array elements
+		util.reverseArray(numbers); // envoke method to reverse array elements
 		
-		util.printIArr(numbers, NUM_ELEMENTS);  // envoke method to print reversed array elements
+		util.printArray(numbers);  // envoke method to print reversed array elements
 		scan.close();
 	}
 

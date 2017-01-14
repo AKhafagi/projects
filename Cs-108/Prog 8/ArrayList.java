@@ -1,6 +1,6 @@
 import java.util.Arrays;
 
-public class ArrayList<E extends Comparable<E>> implements ListT<E> {
+public class ArrayList<E> implements ListT<E> {
 	private E[] arr;
 	private int size;
 /**
@@ -8,7 +8,7 @@ public class ArrayList<E extends Comparable<E>> implements ListT<E> {
  */
 	@SuppressWarnings("unchecked")
 	public ArrayList() {
-		this.arr = (E[]) new Comparable[10];
+		this.arr = (E[]) new Object[10];
 		this.size = 0;
 	}
 /**
@@ -59,7 +59,7 @@ public class ArrayList<E extends Comparable<E>> implements ListT<E> {
 	public boolean contains(E data) {
 		if (data != null) {
 			for (int i = 0; i < size; i++) {
-				if (arr[i].compareTo(data) == 0) {
+				if (((Comparable<E>)arr[i]).compareTo(data) == 0) {
 					return true;
 				}
 
@@ -100,7 +100,7 @@ public class ArrayList<E extends Comparable<E>> implements ListT<E> {
 	public int indexOf(E data) {
 		if (data != null) {
 			for (int i = 0; i < size; i++) {
-				if (arr[i].compareTo(data) == 0) {
+				if (((Comparable<E>)arr[i]).compareTo(data) == 0) {
 					return i;
 				}
 
@@ -149,5 +149,10 @@ public class ArrayList<E extends Comparable<E>> implements ListT<E> {
 			e.printStackTrace();
 		}
 		return arr;
+	}
+	public void print(){
+		for(int i =0; i<size;i++)
+		System.out.print(arr[i] + ",");
+		
 	}
 }

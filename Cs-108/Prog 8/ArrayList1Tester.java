@@ -1,7 +1,7 @@
 
 public class ArrayList1Tester {
 	public static void main(String [] args) throws Exception{
-	ArrayList1<Integer> arr = new ArrayList1<Integer>();
+	ArrayList<Integer> arr = new ArrayList<Integer>();
 	arr.add(new Integer(10));
 	arr.add(new Integer(20));
 	arr.add(new Integer(30));
