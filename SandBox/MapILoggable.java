@@ -6,6 +6,7 @@
  * @version 1.0
  */
 
+package edu.sdsu.cs.datastructures;
 
 import java.util.Comparator;
 import java.util.logging.Logger;
@@ -24,7 +25,7 @@ import java.util.logging.Logger;
  * @param <E>
  *          The Type of the objects the trigger compares
  */
-public interface ILoggable<E> {
+public interface MapILoggable<K,V> {
 
   /**
    * Attaches the parameter object <code>trigger</code> to the
@@ -54,7 +55,7 @@ public interface ILoggable<E> {
    *         <code>false</code> if this object was unable to attach the provided
    *         trigger
    */
-  boolean addTrigger(Comparator<E> trigger, E value);
+  boolean addTrigger(Comparator<K> trigger, K value);
 
   /**
    * Removes all currently attached triggers. The <code>ILoggable</code> object
