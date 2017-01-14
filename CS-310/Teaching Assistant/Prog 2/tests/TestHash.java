@@ -3,8 +3,8 @@ package tests;
 import java.util.Iterator;
 
 import data.AnObject;
-import data_structures.Hash;
-import data_structures.HashI;
+import data_structuresH.Hash;
+import data_structuresH.HashI;
 
 public class TestHash {
 

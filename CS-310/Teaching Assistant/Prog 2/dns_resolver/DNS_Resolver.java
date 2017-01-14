@@ -2,7 +2,7 @@ package dns_resolver;
 
 import java.util.Scanner;
 
-import data_structures.HashI;
+import data_structuresH.HashI;
 import exceptions.FileFormatException;
 
 /**

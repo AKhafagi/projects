@@ -1,4 +1,4 @@
-package calculator;
+package calculatorT;
 
 import java.util.StringTokenizer;
 

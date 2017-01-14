@@ -5,8 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-import data_structures.Hash;
-import data_structures.HashI;
+import data_structuresH.Hash;
+import data_structuresH.HashI;
 import exceptions.FileFormatException;
 
 public class LoadInternetAddresses {

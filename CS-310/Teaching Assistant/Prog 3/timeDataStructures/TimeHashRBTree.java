@@ -7,12 +7,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.TreeMap;
 
-import data_structures.Hash;
-import data_structures.HashI;
-import data_structures.LinkedList;
-import data_structures.RedBlackTree;
-import dns_resolver.IPAddress;
-import dns_resolver.URL;
+import data_structuresH.Hash;
+import data_structuresH.HashI;
+import data_structuresH.LinkedList;
+import data_structuresT.RedBlackTree;
+import dns_resolverT.IPAddress;
+import dns_resolverT.URL;
 
 public class TimeHashRBTree {
 

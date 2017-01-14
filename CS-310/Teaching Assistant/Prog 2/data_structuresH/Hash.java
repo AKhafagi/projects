@@ -1,9 +1,12 @@
 /**
  * 
  */
-package data_structures;
+package data_structuresH;
 
 import java.util.Iterator;
+
+import data_structuresH.HashI;
+import data_structuresH.LinkedList;
 
 
 public class Hash<K, V> implements HashI<K, V> {

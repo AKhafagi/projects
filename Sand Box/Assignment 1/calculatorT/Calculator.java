@@ -1,4 +1,4 @@
-package calculator;
+package calculatorT;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -17,6 +17,9 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.border.LineBorder;
 
+import calculatorT.Calculator;
+import calculator.ExpressionEvaluator;
+
 /**
  *   Calculator.java
  *   GUI for CS310 Fall 2016
@@ -25,6 +28,9 @@ import javax.swing.border.LineBorder;
 
 
 public class Calculator extends JFrame {
+	/**
+	 * 
+	 */
 	protected JLabel label;
 	protected JButton [] buttons;
 	protected JPanel buttonPanel;

@@ -2,6 +2,8 @@ package data_structures;
 
 import java.util.Iterator;
 
+import data_structures.LinkedList;
+
 public class Queue<E> {
     private ListI<E> list;
     

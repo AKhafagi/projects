@@ -1,4 +1,4 @@
-package dns_resolver;
+package dns_resolverT;
 
 public class IPAddress implements Comparable<IPAddress> {
 

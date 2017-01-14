@@ -1,4 +1,4 @@
-package dns_resolver;
+package dns_resolverT;
 
 /**
  * A URL Object that just knows how to compare URLs

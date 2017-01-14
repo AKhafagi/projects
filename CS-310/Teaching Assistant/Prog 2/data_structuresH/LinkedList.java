@@ -1,7 +1,7 @@
 /**
  * 
  */
-package data_structures;
+package data_structuresH;
 
 import java.util.Iterator;
 
@@ -9,15 +9,15 @@ import java.util.Iterator;
  * @author redwards
  *
  */
-public class LinkedList<E> implements Iterable<E> {
+public class LinkedList<E> implements HashListI<E> {
 
 	Node<E> head, tail;
 	int currentSize;
 
-	class Node<E> {
-		Node<E> next;
-		E data;
-		public Node(E obj) {
+	class Node<T> {
+		Node<T> next;
+		T data;
+		public Node(T obj) {
 			this.data = obj;
 		}
 	}
@@ -52,9 +52,8 @@ public class LinkedList<E> implements Iterable<E> {
 		currentSize = 0;
 	}
 
-	/* (non-Javadoc)
-	 * @see data_structures.ListI#addFirst(java.lang.Object)
-	 */
+
+	@Override
 	public void add(E obj) {
 		Node<E> node = new Node<E>(obj);
 
@@ -66,7 +65,7 @@ public class LinkedList<E> implements Iterable<E> {
 		currentSize++;
 	}
 
-	
+	@Override
 	public E remove(E obj) {
 		if (head == null)
 			return null;
@@ -81,20 +80,24 @@ public class LinkedList<E> implements Iterable<E> {
 		return tmp;
 	}
 
+	@Override
 	public void makeEmpty() {
 		head = tail = null;
 		currentSize = 0;
 	}
 
+	@Override
 	public boolean isEmpty() {
 		return head == null;
 	}
 
-
+	@Override
 	public int size() {
 		return currentSize;
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
 	public boolean contains(E obj) {
 		if (head == null) 
 			return false;
@@ -109,8 +112,8 @@ public class LinkedList<E> implements Iterable<E> {
 		
 	}
 
+	@Override
 	public Iterator<E> iterator() {
 		return new IteratorHelper();
 	}
-
 }
